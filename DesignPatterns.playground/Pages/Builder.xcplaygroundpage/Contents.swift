@@ -26,6 +26,8 @@ enum Meat: String {
     case tofu
 }
 
+
+
 struct Sauces: OptionSet {
     public static let mayonnaise = Sauces(rawValue: 1 << 0)
     public static let mustard = Sauces(rawValue: 1 << 1)
@@ -138,3 +140,165 @@ func tryConsume(_ burgerCreator: () throws -> Hamburger) {
 let chef = Employee()
 tryConsume(chef.createCombo1)
 tryConsume(chef.createKittenSpecial)
+
+// MARK: - Example
+
+enum Direction {
+    case north, south, east, west
+}
+
+protocol MapSite {
+    func enter()
+}
+
+class Room: MapSite {
+    private var mapSides: [Direction: MapSite] = [:]
+    private(set) var roomNo: Int
+    
+    init(_ roomNo: Int) {
+        self.roomNo = roomNo
+    }
+    
+    func getSide(for direction: Direction) -> MapSite? {
+        mapSides[direction]
+    }
+    
+    func setSide(for direction: Direction, side: MapSite) {
+        mapSides[direction] = side
+    }
+    
+    func enter() { }
+}
+
+class Wall: MapSite {
+    func enter() { }
+}
+
+class Door: MapSite {
+    private var firstRoom: Room
+    private var secondRoom: Room
+    
+    init(firstRoom: Room, secondRoom: Room) {
+        self.firstRoom = firstRoom
+        self.secondRoom = secondRoom
+    }
+    
+    func enter() { }
+}
+
+class Maze {
+    private var rooms: [Room] = []
+    
+    func addRoom(_ room: Room) {
+        rooms.append(room)
+    }
+    
+    func getRoom(with number: Int) -> Room? {
+        rooms.first { $0.roomNo == number }
+    }
+}
+
+// MARK: - Builder
+
+protocol MazeBuilder {
+    func buildMaze()
+    func buildRoom(number: Int)
+    func buildDoor(from firstRoomNo: Int, to secondRoomNo: Int)
+    func getMaze() -> Maze
+}
+
+class StandartMazeBuilder: MazeBuilder {
+    private var currentMaze: Maze?
+    
+    func buildMaze() {
+        currentMaze = Maze()
+    }
+    
+    func buildRoom(number: Int) {
+        guard let currentMaze = currentMaze,
+            currentMaze.getRoom(with: number) == nil else { return }
+        
+        let room = Room(number)
+        currentMaze.addRoom(room)
+        
+        room.setSide(for: .north, side: Wall())
+        room.setSide(for: .east, side: Wall())
+        room.setSide(for: .west, side: Wall())
+        room.setSide(for: .south, side: Wall())
+    }
+    
+    func buildDoor(from firstRoomNo: Int, to secondRoomNo: Int) {
+        guard let fromRoom = currentMaze?.getRoom(with: firstRoomNo),
+              let toRoom = currentMaze?.getRoom(with: secondRoomNo) else { return }
+        
+        let door = Door(firstRoom: fromRoom, secondRoom: toRoom)
+        
+        fromRoom.setSide(for: commonWall(fromRoom, toRoom),
+                         side: door)
+        toRoom.setSide(for: commonWall(toRoom, fromRoom),
+                       side: door)
+    }
+    
+    func getMaze() -> Maze {
+        currentMaze ?? Maze()
+    }
+    
+    private func commonWall(_ first: Room, _ second: Room) -> Direction { .east }
+}
+
+class CountingMazeBuilder: MazeBuilder {
+    private(set) var doors: Int = 0
+    private(set) var rooms: Int = 0
+    
+    func buildMaze() { }
+    
+    func buildRoom(number: Int) {
+        rooms += 1
+    }
+    
+    func buildDoor(from firstRoomNo: Int, to secondRoomNo: Int) {
+        doors += 1
+    }
+    
+    func getMaze() -> Maze {
+        Maze()
+    }
+    
+    func getCounts() -> (rooms: Int, doors: Int) {
+        (rooms, doors)
+    }
+}
+
+class MazeGame {
+    func createMaze(builder: MazeBuilder) -> Maze {
+        builder.buildMaze()
+        
+        builder.buildRoom(number: 1)
+        builder.buildRoom(number: 2)
+        builder.buildDoor(from: 1, to: 2)
+        
+        return builder.getMaze()
+    }
+    
+    func createComplexMaze(builder: MazeBuilder) -> Maze {
+        builder.buildMaze()
+        
+        builder.buildRoom(number: 1)
+        // ...
+        builder.buildRoom(number: 1001)
+        
+        return builder.getMaze()
+    }
+}
+
+// MARK: - Usage
+
+let game = MazeGame()
+let builder = StandartMazeBuilder()
+let maze = game.createMaze(builder: builder)
+
+
+let countBuilder = CountingMazeBuilder()
+let _ = game.createMaze(builder: countBuilder)
+let (roomsCount, doorsCount) = countBuilder.getCounts()
+print("Maze has \(roomsCount) rooms and \(doorsCount) doors")
