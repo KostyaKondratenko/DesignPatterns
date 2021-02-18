@@ -41,6 +41,7 @@
     b) **Intermediate**
  
  - [Factory](Factory)
+ - [Prototype](Prototype)
  
     c) **Advanced**
  */
