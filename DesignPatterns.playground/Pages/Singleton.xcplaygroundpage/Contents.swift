@@ -11,3 +11,21 @@
  
  ## Code Example
  */
+class Singleton {
+    static var shared = Singleton()
+    private init() { }
+}
+
+let s = Singleton.shared
+// Error:
+// let s2 = Singleton()
+
+class SingletonPlus {
+    static var shared = SingletonPlus()
+    init() { }
+}
+
+let sp = SingletonPlus.shared
+// Valid
+// Used for testing
+let sp2 = SingletonPlus()

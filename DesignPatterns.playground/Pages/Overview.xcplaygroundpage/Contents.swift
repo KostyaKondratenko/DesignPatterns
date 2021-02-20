@@ -14,10 +14,12 @@
  
     b) **Intermediate**
  
+ - [Adapter](Adapter)
+ 
     c) **Advanced**
  
- 2. **Behavioral patterns** describe how objects communicate with each other.
- Examples of behavioral patterns are:
+ 2. **Behavioural patterns** describe how objects communicate with each other.
+ Examples of behavioural patterns are:
  
     a) **Fundamental**
  
