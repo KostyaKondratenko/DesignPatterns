@@ -19,6 +19,8 @@
  
     c) **Advanced**
  
+ - [Composite](Composite)
+ 
  2. **Behavioural patterns** describe how objects communicate with each other.
  Examples of behavioural patterns are:
  
