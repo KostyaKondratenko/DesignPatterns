@@ -126,3 +126,58 @@ let viewController = LoginViewController.instance(with: GoogleAuthenticatorAdapt
 viewController.emailTextField.text = "user@example.com"
 viewController.passwordTextField.text = "password"
 viewController.login()
+
+
+
+// MARK: - Another Example
+
+// MARK: - Legacy Object
+
+protocol TextView {
+    var isEmpty: Bool { get }
+    func getOrigin() -> (x: CGFloat, y: CGFloat)
+    func getExtent() -> (width: CGFloat, height: CGFloat)
+}
+
+// MARK: - Adapter
+
+protocol Manipulator { }
+
+protocol Shape {
+    var isEmpty: Bool { get }
+    func boundingBox() -> (topLeft: CGPoint, bottomRight: CGPoint)
+    func createManipulator() -> Manipulator
+}
+
+class TextManipulator: Manipulator {
+    private var textShape: TextShape
+    
+    init(_ textShape: TextShape) {
+        self.textShape = textShape
+    }
+}
+
+class TextShape: Shape {
+    private var textView: TextView
+    
+    init(with textView: TextView) {
+        self.textView = textView
+    }
+    
+    var isEmpty: Bool {
+        textView.isEmpty
+    }
+    
+    func boundingBox() -> (topLeft: CGPoint, bottomRight: CGPoint) {
+        let (x, y) = textView.getOrigin()
+        let (width, height) = textView.getExtent()
+        
+        let topLeft = CGPoint(x: x, y: y)
+        let bottomRight = CGPoint(x: x + width, y: y + height)
+        return (topLeft, bottomRight)
+    }
+    
+    func createManipulator() -> Manipulator {
+        TextManipulator(self)
+    }
+}

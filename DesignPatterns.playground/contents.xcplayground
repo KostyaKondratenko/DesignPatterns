@@ -3,14 +3,15 @@
     <pages>
         <page name='Overview'/>
         <page name='Model-View-Controller'/>
-        <page name='Adapter'/>
         <page name='Delegation'/>
         <page name='Strategy'/>
-        <page name='Observer'/>
-        <page name='Memento'/>
         <page name='Singleton'/>
+        <page name='Memento'/>
+        <page name='Observer'/>
         <page name='Builder'/>
         <page name='Factory'/>
+        <page name='Adapter'/>
         <page name='Prototype'/>
+        <page name='Bridge'/>
     </pages>
 </playground>

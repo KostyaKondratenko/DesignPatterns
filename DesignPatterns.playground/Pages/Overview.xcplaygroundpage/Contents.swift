@@ -15,6 +15,7 @@
     b) **Intermediate**
  
  - [Adapter](Adapter)
+ - [Bridge](Bridge)
  
     c) **Advanced**
  
